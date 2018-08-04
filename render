@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import os
+import pathlib
+import subprocess
+import sys
+
+
+_HERE = pathlib.Path(__file__).parent
+_OUTPUT = _HERE / 'rendered'
+
+
+try:
+    os.mkdir(_OUTPUT)
+except FileExistsError:
+    pass
+
+
+for path in _HERE.glob('*.rst'):
+    try:
+        output_path = _OUTPUT / f'{path.stem}.html'
+        with open(output_path, 'wb') as output_file:
+            subprocess.check_call(
+                ('rst2html5.py', str(path)),
+                stdout=output_file,
+            )
+    except subprocess.CalledProcessError:
+        print('build: rst2html5.py failed.', file=sys.stderr)
